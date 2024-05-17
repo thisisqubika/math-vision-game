@@ -1,6 +1,9 @@
-# Happy Beam
-Leverage an immersive space to create a fun game using ARKit.
+# Math Vision
 
-In visionOS, you can create fun, dynamic games and apps using several different frameworks to create new kinds of spatial experiences: RealityKit, ARKit, SwiftUI, and Group Activities. This sample introduces Happy Beam, a game where you and your friends can hop on a FaceTime call and play together. To learn more about the features that this sample implements, see [Happy Beam](https://developer.apple.com/documentation/visionos/happybeam).
+> TODO's:
+- Better questions, not just +, harder questions
+- Create the concept of LEVEL, so user can select first what level he want's to play, and the balloon speed should depend on that. If level is higher, user
+should have less time to complete the challenge
+- Countdown animation looks weird
+- Sound: Removed all. We might want to download some ones from the internet and create some type of AudioService
 
-> Features in this sample that rely on ARKit or Group Activities only run on device, not in Simulator.
