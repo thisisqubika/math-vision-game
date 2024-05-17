@@ -8,6 +8,7 @@ Vision Pro POC based on WWDC happy beam demo
 should have less time to complete the challenge
 - Countdown animation looks weird
 - Sound: Removed all. We might want to download some ones from the internet and create some type of AudioService
+- Better Animations & models (current ones are created programatically -> balloon)
 
 > Current state: Fri 17 May, 2024:
 
