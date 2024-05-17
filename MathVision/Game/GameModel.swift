@@ -7,6 +7,12 @@ class GameModel {
     
     // MARK: Public
     
+    enum RoundState {
+        case success
+        case failure
+        case timeout
+    }
+    
     // Space
     let spaceOrigin = Entity()
     var rounds: [Round] = []
@@ -55,7 +61,7 @@ class GameModel {
             timeLeft -= 1
         } else {
             ttsManager.speak(text: "Timeout!")
-            nextRound(didSucceedCurrentRound: false)
+            nextRound(currentRoundState: .timeout)
         }
     }
     
@@ -68,15 +74,15 @@ class GameModel {
             explodeBalloon(entity, balloon: balloon)
             MainActorQueue.shared.enqueue {
                 try? await Task.sleep(for: .seconds(0.25))
-                self.nextRound(didSucceedCurrentRound: true)
+                self.nextRound(currentRoundState: .success)
             }
         } else {
             ttsManager.speak(text: "Incorrect")
-            explodeAllBalloons()
+            nextRound(currentRoundState: .failure)
         }
     }
     
-    func nextRound(didSucceedCurrentRound: Bool) {
+    func nextRound(currentRoundState: RoundState) {
         if currentRoundIndex == rounds.count - 1 {
             state = .result
             ttsManager.speak(text: scoreMessage)
@@ -87,13 +93,11 @@ class GameModel {
             timeLeft = GameModel.gameTime
             MainActorQueue.shared.enqueue {
                 do {
-                    if didSucceedCurrentRound {
+                    switch currentRoundState {
+                    case .success, .failure:
                         self.clear3Dcontent()
-                    } else {
-                        self.balloons.forEach {
-                            guard let balloon = $0.components[Balloon.self] else { return }
-                            self.explodeBalloon($0, balloon: balloon)
-                        }
+                    case .timeout:
+                        self.explodeAllBalloons()
                     }
                     self.balloons = try await self.spawnAndAnimateBalloons(options: self.currentRound?.answers ?? [])
                     self.explainRound()

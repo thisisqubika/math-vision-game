@@ -59,9 +59,9 @@ extension GameModel {
 
     @MainActor
     func explodeAllBalloons() {
-        for entity in spaceOrigin.children where entity.components.has(Balloon.self) {
-            guard let balloon = entity.components[Balloon.self] else { continue }
-            explodeBalloon(entity, balloon: balloon)
+        self.balloons.forEach {
+            guard let balloon = $0.components[Balloon.self] else { return }
+            self.explodeBalloon($0, balloon: balloon)
         }
     }
     
