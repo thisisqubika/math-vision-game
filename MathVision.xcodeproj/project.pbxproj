@@ -11,7 +11,7 @@
 		30CC74AC2BF7C2E500EBA912 /* Explosion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC74AB2BF7C2E500EBA912 /* Explosion.swift */; };
 		30CC74B12BF7C40C00EBA912 /* Round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC74B02BF7C40C00EBA912 /* Round.swift */; };
 		30CC74B42BF7C54500EBA912 /* TextToSpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC74B32BF7C54500EBA912 /* TextToSpeechManager.swift */; };
-		30EE1B3B2BF6E045003EC9C1 /* AsyncQueue in Frameworks */ = {isa = PBXBuildFile; productRef = 30EE1B3A2BF6E045003EC9C1 /* AsyncQueue */; };
+		30CC74B72BF7CBF000EBA912 /* AsyncQueue in Frameworks */ = {isa = PBXBuildFile; productRef = 30CC74B62BF7CBF000EBA912 /* AsyncQueue */; };
 		321A0C13291C02B80042A987 /* MathVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321A0C12291C02B80042A987 /* MathVisionApp.swift */; };
 		321A0C19291C02B90042A987 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 321A0C18291C02B90042A987 /* Assets.xcassets */; };
 		321A0C1C291C02B90042A987 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 321A0C1B291C02B90042A987 /* Preview Assets.xcassets */; };
@@ -52,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30EE1B3B2BF6E045003EC9C1 /* AsyncQueue in Frameworks */,
+				30CC74B72BF7CBF000EBA912 /* AsyncQueue in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,7 +173,7 @@
 			);
 			name = MathVision;
 			packageProductDependencies = (
-				30EE1B3A2BF6E045003EC9C1 /* AsyncQueue */,
+				30CC74B62BF7CBF000EBA912 /* AsyncQueue */,
 			);
 			productName = HappyBeamX;
 			productReference = 321A0C0B291C02B80042A987 /* MathVision.app */;
@@ -205,7 +205,7 @@
 			);
 			mainGroup = 321A0C02291C02B70042A987;
 			packageReferences = (
-				30EE1B392BF6E045003EC9C1 /* XCRemoteSwiftPackageReference "swift-async-queue" */,
+				30CC74B52BF7CBF000EBA912 /* XCRemoteSwiftPackageReference "swift-async-queue" */,
 			);
 			productRefGroup = 321A0C0C291C02B80042A987 /* Products */;
 			projectDirPath = "";
@@ -458,20 +458,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		30EE1B392BF6E045003EC9C1 /* XCRemoteSwiftPackageReference "swift-async-queue" */ = {
+		30CC74B52BF7CBF000EBA912 /* XCRemoteSwiftPackageReference "swift-async-queue" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dfed/swift-async-queue";
 			requirement = {
-				kind = exactVersion;
-				version = 0.5.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		30EE1B3A2BF6E045003EC9C1 /* AsyncQueue */ = {
+		30CC74B62BF7CBF000EBA912 /* AsyncQueue */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 30EE1B392BF6E045003EC9C1 /* XCRemoteSwiftPackageReference "swift-async-queue" */;
+			package = 30CC74B52BF7CBF000EBA912 /* XCRemoteSwiftPackageReference "swift-async-queue" */;
 			productName = AsyncQueue;
 		};
 /* End XCSwiftPackageProductDependency section */
