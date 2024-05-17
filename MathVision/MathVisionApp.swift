@@ -1,22 +1,14 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The app structure.
-*/
-
 import SwiftUI
 import RealityKit
 
-/// The structure of the Happy Beam app: a main window and a Full Space for gameplay.
-@main
-struct HappyBeamApp: App {
+@MainActor @main
+struct MathVisionApp: App {
     @State private var gameModel = GameModel()
     @State private var immersionState: ImmersionStyle = .mixed
     
     var body: some SwiftUI.Scene {
-        WindowGroup("HappyBeam", id: "happyBeamApp") {
-            HappyBeam()
+        WindowGroup("MathVision", id: "mathVisionApp") {
+            MathVision()
                 .environment(gameModel)
                 .onAppear {
                     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
@@ -28,15 +20,10 @@ struct HappyBeamApp: App {
         }
         .windowStyle(.plain)
         
-        ImmersiveSpace(id: "happyBeam") {
-            HappyBeamSpace(gestureModel: HeartGestureModelContainer.heartGestureModel)
+        ImmersiveSpace(id: "mathVision") {
+            MathVisionSpace()
                 .environment(gameModel)
         }
         .immersionStyle(selection: $immersionState, in: .mixed)
     }
-}
-
-@MainActor
-enum HeartGestureModelContainer {
-    private(set) static var heartGestureModel = HeartGestureModel()
 }

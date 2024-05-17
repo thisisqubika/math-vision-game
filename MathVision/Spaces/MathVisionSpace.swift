@@ -28,7 +28,7 @@ struct MathVisionSpace: View {
     
     var body: some View {
         RealityView { content in
-            content.add(spaceOrigin)
+            content.add(gameModel.spaceOrigin)
         } update: { updateContent in
             
         }

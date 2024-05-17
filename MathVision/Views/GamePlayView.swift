@@ -3,8 +3,10 @@ import SwiftUI
 @MainActor
 struct GamePlayView: View {
     @Environment(GameModel.self) var gameModel
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
-    
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     var body: some View {
         ZStack {
             let awaiting = gameModel.countDown > 0
@@ -13,7 +15,15 @@ struct GamePlayView: View {
             countdownGauge
                 .hidden(!awaiting)
         }
-        .frame(width: 550, height: 550)
+        .onReceive(timer) { _ in
+            gameModel.updateCountdown(onCountdownIsZero: {
+                Task {
+                    await openImmersiveSpace(id: "mathVision")
+                    gameModel.generateRounds()
+                }
+            })
+            gameModel.syncTimeLeft()
+        }
     }
     
     private var playView: some View {
@@ -26,9 +36,7 @@ struct GamePlayView: View {
             scoreStack
             Spacer()
             HStack {
-                muteButton
                 timeLeftProgressView
-                playPauseButton
             }
             .background(
                 .regularMaterial,
@@ -76,29 +84,26 @@ struct GamePlayView: View {
     private var scoreStack: some View {
         HStack {
             Spacer()
-            VStack {
-                Text(verbatim: "\(String(format: "%02d", gameModel.score))")
-                    .font(.system(size: 120))
-                    .bold()
-                Text("score")
+            switch gameModel.state {
+            case .result:
+                VStack {
+                    Text(verbatim: "\(String(format: "%02d", gameModel.score))")
+                        .font(.system(size: 120))
+                        .bold()
+                    Text("score")
+                        .font(.system(size: 60))
+                        .bold()
+                        .offset(y: -5)
+                }
+            case .playing:
+                Text(verbatim: gameModel.currentRound?.question ?? "")
                     .font(.system(size: 60))
                     .bold()
-                    .offset(y: -5)
+            default:
+                EmptyView()
             }
             Spacer()
         }
-    }
-    
-    private var muteButton: some View {
-        Button(action: gameModel.onToggleMuted) {
-            Label(
-                gameModel.isMuted ? "Play music" : "Stop music",
-                systemImage: gameModel.isMuted ? "speaker.slash.fill" : "speaker.wave.3.fill"
-            )
-            .labelStyle(.iconOnly)
-        }
-        .padding(.leading, 12)
-        .padding(.trailing, 10)
     }
     
     private var timeLeftProgressView: some View {
@@ -108,26 +113,12 @@ struct GamePlayView: View {
             .tint(Color(uiColor: UIColor(red: 242 / 255, green: 68 / 255, blue: 206 / 255, alpha: 1.0)))
             .padding(.vertical, 30)
     }
-    
-    private var playPauseButton: some View {
-        Button(action: gameModel.onPlayPause) {
-            if gameModel.state.isPlaying {
-                Label("Pause", systemImage: "pause.fill")
-                    .labelStyle(.iconOnly)
-            } else {
-                Label("Play", systemImage: "play.fill")
-                    .labelStyle(.iconOnly)
-            }
-        }
-        .padding(.trailing, 12)
-        .padding(.leading, 10)
-    }
 }
 
 #Preview {
     VStack {
         Spacer()
-        GameScoreView()
+        GamePlayView()
             .environment(GameModel())
             .glassBackgroundEffect(
                 in: RoundedRectangle(
@@ -135,5 +126,6 @@ struct GamePlayView: View {
                     style: .continuous
                 )
             )
+            .frame(width: 550, height: 550)
     }
 }

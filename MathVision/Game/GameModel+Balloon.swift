@@ -23,7 +23,7 @@ extension GameModel {
     // MARK: Public
     
     func spawnAndAnimateBalloons(options: [Int]) async throws -> [Entity] {
-        let horizontalStartPositions: [Float] = [-0.25, 0, 0.25]  // More spaced apart
+        let horizontalStartPositions: [Float] = [-0.25, 0, 0.25]
         
         let startHeight: Float = 1
         let endHeight: Float = 4
@@ -33,29 +33,32 @@ extension GameModel {
         for (index, number) in options.enumerated() {
             let balloonColor = colors.randomElement() ?? .white
             colors.removeAll(where: { $0 == balloonColor })
-            let balloon = createBalloon(withNumber: number, color: balloonColor)
+            let balloonComponent = Balloon(
+                id: UUID.init(),
+                color: balloonColor,
+                answer: number
+            )
+            let balloonEntity = createBalloon(withNumber: number, component: balloonComponent)
             let xPos = horizontalStartPositions[index]
-            balloon.position = SIMD3<Float>(xPos, startHeight, 0)  // Correctly using Float type
-            balloon.components.set(
+            balloonEntity.position = SIMD3<Float>(xPos, startHeight, 0)
+            balloonEntity.components.set(
                 Balloon(
                     id: UUID.init(),
                     color: balloonColor,
                     answer: number
                 )
             )
-            balloon.components[InputTargetComponent.self] = InputTargetComponent()
-            balloon.components[CollisionComponent.self] = CollisionComponent(
+            balloonEntity.components[InputTargetComponent.self] = InputTargetComponent()
+            balloonEntity.components[CollisionComponent.self] = CollisionComponent(
                 shapes: [.generateSphere(radius: 0.1)],
                 mode: .trigger,
                 filter: .default
             )
-            spaceOrigin.addChild(balloon)
+            spaceOrigin.addChild(balloonEntity)
             
-            // Apply the animation with correct x-coordinate
             let animation = generateBalloonMovementAnimation(from: xPos, startY: startHeight, to: endHeight)
-            balloon.playAnimation(animation, transitionDuration: 0.0, startsPaused: false)
-            
-            balloons.append(balloon)
+            balloonEntity.playAnimation(animation, transitionDuration: 0.0, startsPaused: false)
+            balloons.append(balloonEntity)
         }
         
         return balloons
@@ -63,30 +66,31 @@ extension GameModel {
 
     @MainActor
     func explodeAllBalloons() {
-        for balloon in spaceOrigin.children where balloon.components.has(Balloon.self) {
-            explodeBalloon(balloon, color: .red)
+        for entity in spaceOrigin.children where entity.components.has(Balloon.self) {
+            guard let balloon = entity.components[Balloon.self] else { continue }
+            explodeBalloon(entity, balloon: balloon)
         }
     }
     
     @MainActor
-    func explodeBalloon(_ balloon: Entity, color: UIColor) {
-        createExplosionDebris(at: balloon.position, spreadDuration: 1.0, color: color)
-        balloon.removeFromParent()
+    func explodeBalloon(_ entity: Entity, balloon: Balloon) {
+        createExplosionDebris(at: entity.position, spreadDuration: 1.0, balloon: balloon)
+        entity.removeFromParent()
     }
     
     // MARK: Private
 
-    private func createBalloon(withNumber number: Int, color: UIColor) -> Entity {
+    private func createBalloon(withNumber number: Int, component: Balloon) -> Entity {
         let sphereMesh = MeshResource.generateSphere(radius: 0.1)
-        let balloonMaterial = SimpleMaterial(color: color, isMetallic: false)
+        let balloonMaterial = SimpleMaterial(color: component.color, isMetallic: false)
         let balloonEntity = ModelEntity(mesh: sphereMesh, materials: [balloonMaterial])
         addSimulatedCurvedStringToBalloon(balloonEntity, color: .white)
-        addBowToBalloon(balloonEntity, color: color)
+        addBowToBalloon(balloonEntity, balloon: component)
         addTextToBalloon(balloonEntity, number: number)
         return balloonEntity
     }
     
-    private func addTextToBalloon(_ balloon: Entity, number: Int) {
+    private func addTextToBalloon(_ entity: Entity, number: Int) {
         let fontSize: CGFloat = 0.15
         let frameWidth: CGFloat = 0.4
         let frameHeight: CGFloat = 0.2
@@ -103,10 +107,10 @@ extension GameModel {
         let textEntity = ModelEntity(mesh: textMesh, materials: [textMaterial])
         textEntity.position = [0, 0, 0.11]
         textEntity.scale = SIMD3<Float>(repeating: 0.5)
-        balloon.addChild(textEntity)
+        entity.addChild(textEntity)
     }
     
-    private func addSimulatedCurvedStringToBalloon(_ balloon: Entity, color: UIColor) {
+    private func addSimulatedCurvedStringToBalloon(_ entity: Entity, color: UIColor) {
         let segmentCount = 10
         let segmentLength: Float = 0.04
         let curveAmount: Float = 0.002
@@ -121,41 +125,41 @@ extension GameModel {
                 segmentEntity.position.x = prev.position.x + (i % 2 == 0 ? -curveAmount : curveAmount)
             }
             
-            balloon.addChild(segmentEntity)
+            entity.addChild(segmentEntity)
             previousSegment = segmentEntity
         }
     }
     
     
-    private func addBowToBalloon(_ balloon: Entity, color: UIColor) {
+    private func addBowToBalloon(_ entity: Entity, balloon: Balloon) {
         let bowWidth: Float = 0.03
         let bowHeight: Float = 0.02
         let bowDepth: Float = 0.01
         
         let knot = MeshResource.generateBox(width: bowDepth, height: bowDepth, depth: bowDepth)
-        let knotMaterial = SimpleMaterial(color: color, isMetallic: false)
+        let knotMaterial = SimpleMaterial(color: balloon.color, isMetallic: false)
         let knotEntity = ModelEntity(mesh: knot, materials: [knotMaterial])
         knotEntity.position = [0, -0.1, 0]
-        balloon.addChild(knotEntity)
+        entity.addChild(knotEntity)
         
         let loopCount = 2
         for i in 0..<loopCount {
             let loop = MeshResource.generateCylinder(height: bowHeight, radius: bowDepth / 2)
-            let loopMaterial = SimpleMaterial(color: color, isMetallic: false)
+            let loopMaterial = SimpleMaterial(color: balloon.color, isMetallic: false)
             let loopEntity = ModelEntity(mesh: loop, materials: [loopMaterial])
             
             let angle = Float.pi / 2 * Float(i)
             loopEntity.position = [bowWidth * (i % 2 == 0 ? 1 : -1) * 0.5, -0.1, 0]
             loopEntity.orientation = simd_quatf(angle: angle, axis: [0, 1, 0])
-            balloon.addChild(loopEntity)
+            entity.addChild(loopEntity)
         }
     }
 
     @MainActor
-    private func createExplosionDebris(at position: SIMD3<Float>, spreadDuration: TimeInterval, color: UIColor) {
+    private func createExplosionDebris(at position: SIMD3<Float>, spreadDuration: TimeInterval, balloon: Balloon) {
         for _ in 0..<10 {
             let fragment = MeshResource.generateSphere(radius: 0.02)
-            let material = SimpleMaterial(color: color, isMetallic: false)
+            let material = SimpleMaterial(color: balloon.color, isMetallic: false)
             let fragmentEntity = ModelEntity(mesh: fragment, materials: [material])
             fragmentEntity.position = position
             fragmentEntity.components.set(Explosion())

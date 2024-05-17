@@ -3,7 +3,7 @@
 import UIKit
 import RealityKit
 
-struct BalloonComponent: Component {
+struct Balloon: Component {
     var id: UUID
     var color: UIColor
     var answer: Int
