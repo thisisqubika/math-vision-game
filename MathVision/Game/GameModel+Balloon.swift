@@ -1,10 +1,3 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Declarations and parameters for clouds and their movement.
-*/
-
 import UIKit
 import Spatial
 import RealityKit
