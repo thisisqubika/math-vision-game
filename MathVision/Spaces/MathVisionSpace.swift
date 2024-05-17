@@ -1,10 +1,3 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The space where the game takes place.
-*/
-
 import Accelerate
 import AVKit
 import Combine

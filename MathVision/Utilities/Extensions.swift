@@ -1,10 +1,3 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Extensions and utilities.
-*/
-
 import SwiftUI
 import RealityKit
 
@@ -26,9 +19,7 @@ extension Entity {
         }
         return descendents
     }
-}
 
-extension Entity {
     func setMaterialParameterValues(parameter: String, value: MaterialParameters.Value) {
         let modelEntities = descendentsWithModelComponent
         for entity in modelEntities {
