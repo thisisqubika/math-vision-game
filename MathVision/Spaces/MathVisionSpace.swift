@@ -11,7 +11,6 @@ import Combine
 import GameController
 import RealityKit
 import SwiftUI
-import MathVisionAssets
 
 /// The Full Space that displays when someone plays the game.
 @MainActor
